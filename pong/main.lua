@@ -15,10 +15,12 @@ function love.load()
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    love.window.setTitle('Pong')
+
     math.randomseed(os.time())
 
     smallFont = love.graphics.newFont('font.ttf', 8)
-    love.graphics.setFont(smallFont)
+    scoreFont = love.graphics.newFont('font.ttf', 32)
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -40,6 +42,54 @@ end
 -- called once per frame with delta in seconds since last frame
 function love.update(dt)
 
+    -- ball-paddle collision detection
+    if ball:collides(player1) then
+        ball.dx = -ball.dx * 1.03
+        ball.x = player1.x + 5
+
+        if ball.dy < 0 then
+            ball.dy = -math.random(10, 150)
+        else
+            ball.dy = math.random(10, 150)
+        end
+    end
+
+    if ball:collides(player2) then
+        ball.dx = -ball.dx * 1.03
+        ball.x = player2.x - ball.width
+
+        if ball.dy < 0 then
+            ball.dy = -math.random(10, 150)
+        else
+            ball.dy = math.random(10, 150)
+        end
+    end
+
+    -- ball-wall collision detection
+    if ball.y <= 0 then
+        ball.y = 0
+        ball.dy = -ball.dy
+    end
+
+    if ball.y >= VIRTUAL_HEIGHT - ball.width then
+        ball.y = VIRTUAL_HEIGHT - ball.width
+        ball.dy = -ball.dy
+    end
+
+    -- goal collision detection
+    if ball.x <= 0 then
+        gamestate = 'start'
+        player2score = player2score + 1
+        ball:reset()
+    end
+
+    if ball.x >= VIRTUAL_WIDTH + ball.width then
+        gamestate = 'start'
+        player1score = player1score + 1
+        ball:reset()
+    end
+
+    -- paddle movement
     if love.keyboard.isDown('w') then
         player1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
@@ -95,6 +145,7 @@ function love.draw()
         love.graphics.printf('Hello Play State', 0, 20, VIRTUAL_WIDTH, 'center')
     end
 
+    love.graphics.setFont(scoreFont)
     love.graphics.print(tostring(player1score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
     love.graphics.print(tostring(player2score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
 
@@ -102,5 +153,14 @@ function love.draw()
     player2:render()
     ball:render()
 
+    -- special function to demo FPS in love2d
+    displayFPS()
+
     push:apply('end')
+end
+
+function displayFPS()
+    love.graphics.setFont(smallFont)
+    love.graphics.setColor(0, 255/255, 0, 255/255)
+    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10)
 end
