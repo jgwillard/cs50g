@@ -35,6 +35,8 @@ function love.load()
         vsync = true
     })
 
+    is2playergame = false
+
     player1score = 0
     player2score = 0
 
@@ -147,12 +149,16 @@ function love.update(dt)
         player1.dy = 0
     end
 
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
+    if is2playergame then
+        if love.keyboard.isDown('up') then
+            player2.dy = -PADDLE_SPEED
+        elseif love.keyboard.isDown('down') then
+            player2.dy = PADDLE_SPEED
+        else
+            player2.dy = 0
+        end
     else
-        player2.dy = 0
+        player2.y = ball.y - 8
     end
 
     if gamestate == 'play' then
