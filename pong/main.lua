@@ -31,7 +31,7 @@ function love.load()
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
-        resizable = false,
+        resizable = true,
         vsync = true
     })
 
@@ -190,7 +190,7 @@ end
 -- called after `update` and used to draw to the screen
 function love.draw()
 
-    push:apply('start')
+    push:start()
 
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
@@ -201,7 +201,7 @@ function love.draw()
     -- special function to demo FPS in love2d
     displayFPS()
 
-    push:apply('end')
+    push:finish()
 end
 
 function renderObjects()
