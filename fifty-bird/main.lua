@@ -29,7 +29,9 @@ local bird = Bird()
 local pipePairs = {}
 
 local spawnTimer = 0
-local lastY = -PIPE_HEIGHT + math.random(80) + 20
+local lastY = math.random(80) + 20 - PIPE_HEIGHT 
+
+local scrolling = true
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -64,29 +66,43 @@ end
 
 function love.update(dt)
 
-    backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
+    if scrolling then
+        backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
 
-    groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+        groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
 
-    spawnTimer = spawnTimer + dt
+        spawnTimer = spawnTimer + dt
 
-    if spawnTimer > 2 then
-        y = lastY + math.random(-20, 20)
-        lastY = y
-        table.insert(pipePairs, PipePair(y, GROUND_SCROLL_SPEED, PIPE_HEIGHT))
-        spawnTimer = 0
-    end
+        if spawnTimer > 2 then
+            local y = math.max(
+                10 - PIPE_HEIGHT,
+                math.min(
+                    lastY + math.random(-20, 20),
+                    VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT
+                )
+            )
+            lastY = y
+            table.insert(pipePairs, PipePair(y, GROUND_SCROLL_SPEED, PIPE_HEIGHT))
+            spawnTimer = 0
+        end
 
-    bird:update(dt)
+        bird:update(dt)
 
-    for k, pipePair in pairs(pipePairs) do
-        pipePair:update(dt)
-    end
+        for k, pipePair in pairs(pipePairs) do
+            pipePair:update(dt)
 
-    for k, pipePair in pairs(pipePairs) do
-        -- if pipe is past left edge of screen, remove it
-        if pipePair.remove then
-            table.remove(pipePair, k)
+            for l, pipe in pairs(pipePair.pipes) do
+                if bird:collides(pipe) then
+                    scrolling = false
+                end
+            end
+        end
+
+        for k, pipePair in pairs(pipePairs) do
+            -- if pipe is past left edge of screen, remove it
+            if pipePair.remove then
+                table.remove(pipePair, k)
+            end
         end
     end
 

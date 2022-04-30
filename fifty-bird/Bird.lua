@@ -13,6 +13,13 @@ function Bird:init()
     self.dy = 0
 end
 
+function Bird:collides(pipe)
+    return ((self.x + 2) + (self.width - 4) >= pipe.x)
+        and self.x + 2 <= pipe.x + pipe.width
+        and (self.y + 2) + (self.height - 4) >= pipe.y
+        and self.y + 2 <= pipe.y + pipe.height
+end
+
 function Bird:update(dt)
     self.dy = self.dy + GRAVITY * dt
     self.y = self.y + self.dy
