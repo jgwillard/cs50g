@@ -11,8 +11,8 @@ local BACKGROUND_LOOPING_POINT = 413
 function PlayState:init()
     self.bird = Bird()
     self.pipePairs = {}
-
     self.spawnTimer = 0
+    self.score = 0
     self.lastY = math.random(80) + 20 - PIPE_HEIGHT 
 end
 
@@ -20,6 +20,7 @@ function PlayState:update(dt)
     
     self.spawnTimer = self.spawnTimer + dt
 
+    -- add a pair of pipes every second and a half
     if self.spawnTimer > 2 then
         local y = math.max(
             10 - PIPE_HEIGHT,
@@ -33,27 +34,43 @@ function PlayState:update(dt)
         self.spawnTimer = 0
     end
 
+    -- increment score
+    for k, pipePair in pairs(self.pipePairs) do
+        if not pipePair.scored then
+            if pipePair.x + pipePair.pipes['lower'].width < self.bird.x then
+                self.score = self.score + 1
+                pipePair.scored = true
+            end
+        end
+    end
+
+    -- if pipe is past left edge of screen, remove it
+    for k, pipePair in pairs(self.pipePairs) do
+        if pipePair.remove then
+            table.remove(self.pipePairs, k)
+        end
+    end
+
     self.bird:update(dt)
 
+    -- collision detection with pipes
     for k, pipePair in pairs(self.pipePairs) do
         pipePair:update(dt)
 
         for l, pipe in pairs(pipePair.pipes) do
             if self.bird:collides(pipe) then
-                gStateMachine:change('title')
+                gStateMachine:change('score', {
+                    score = self.score
+                })
             end
         end
     end
 
-    for k, pipePair in pairs(self.pipePairs) do
-        -- if pipe is past left edge of screen, remove it
-        if pipePair.remove then
-            table.remove(pipePair, k)
-        end
-    end
-
+    -- collision detection with ground
     if self.bird.y > VIRTUAL_HEIGHT then
-        gStateMachine:change('title')
+        gStateMachine:change('score', {
+            score = self.score
+        })
     end
 end
 
@@ -61,6 +78,9 @@ function PlayState:render()
     for k, pipePair in pairs(self.pipePairs) do
         pipePair:render()
     end
+
+    love.graphics.setFont(flappyFont)
+    love.graphics.print('Score: ' .. tostring(self.score), 8, 8)
 
     self.bird:render()
 end

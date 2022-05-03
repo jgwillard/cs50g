@@ -8,7 +8,9 @@ require 'PipePair'
 require 'StateMachine'
 require 'states/BaseState'
 require 'states/PlayState'
+require 'states/ScoreState'
 require 'states/TitleScreenState'
+require 'states/CountdownState'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -16,10 +18,10 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
-local background = love.graphics.newImage('background.png')
+local background = love.graphics.newImage('resources/images/background.png')
 local backgroundScroll = 0
 
-local ground = love.graphics.newImage('ground.png')
+local ground = love.graphics.newImage('resources/images/ground.png')
 local groundScroll = 0
 
 local BACKGROUND_SCROLL_SPEED = 30
@@ -34,10 +36,10 @@ function love.load()
 
     love.window.setTitle('Fifty Bird')
 
-    smallFont = love.graphics.newFont('font.ttf', 8)
-    mediumFont = love.graphics.newFont('flappy.ttf', 14)
-    flappyFont = love.graphics.newFont('flappy.ttf', 28)
-    hugeFont = love.graphics.newFont('flappy.ttf', 56)
+    smallFont = love.graphics.newFont('resources/fonts/font.ttf', 8)
+    mediumFont = love.graphics.newFont('resources/fonts/flappy.ttf', 14)
+    flappyFont = love.graphics.newFont('resources/fonts/flappy.ttf', 28)
+    hugeFont = love.graphics.newFont('resources/fonts/flappy.ttf', 56)
     love.graphics.setFont(flappyFont)
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -49,6 +51,8 @@ function love.load()
     gStateMachine = StateMachine {
         ['title'] = function() return TitleScreenState() end,
         ['play'] = function() return PlayState() end,
+        ['score'] = function() return ScoreState() end,
+        ['countdown'] = function() return CountdownState() end,
     }
 
     gStateMachine:change('title')
