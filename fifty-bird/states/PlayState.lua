@@ -1,10 +1,6 @@
 PlayState = Class{__includes = BaseState}
 
-local BACKGROUND_SCROLL_SPEED = 30
-local GROUND_SCROLL_SPEED = 60
-
 local PIPE_HEIGHT = 288
-local PIPE_WIDTH = 70
 
 local BACKGROUND_LOOPING_POINT = 413
 
@@ -14,6 +10,16 @@ function PlayState:init()
     self.spawnTimer = 0
     self.score = 0
     self.lastY = math.random(80) + 20 - PIPE_HEIGHT 
+end
+
+function PlayState:enter(params)
+    if params then
+        self.bird = params.bird
+        self.pipePairs = params.pipePairs
+        self.spawnTimer = params.spawnTimer
+        self.score = params.score
+        self.lastY = params.lastY
+    end
 end
 
 function PlayState:update(dt)
@@ -77,6 +83,17 @@ function PlayState:update(dt)
 
         gStateMachine:change('score', {
             score = self.score
+        })
+    end
+
+    -- enter pause state
+    if love.keyboard.wasPressed('p') then
+        gStateMachine:change('pause', {
+            bird = self.bird,
+            pipePairs = self.pipePairs,
+            spawnTimer = self.spawnTimer,
+            score = self.score,
+            lastY = self.lastY,
         })
     end
 end
