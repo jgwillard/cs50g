@@ -14,4 +14,6 @@ end
 function PauseState:render()
     love.graphics.setFont(flappyFont)
     love.graphics.printf('Paused', 0, 64, VIRTUAL_WIDTH, 'center')
+
+    renderPlayStateElements(self.params)
 end

@@ -9,6 +9,7 @@ end
 
 function CountdownState:update(dt)
     self.timer = self.timer + dt
+    updateBackgroundElements(dt)
 
     if self.timer > COUNTDOWN_TIME then
         self.timer = self.timer % COUNTDOWN_TIME

@@ -25,11 +25,9 @@ local backgroundScroll = 0
 local ground = love.graphics.newImage('resources/images/ground.png')
 local groundScroll = 0
 
-local BACKGROUND_SCROLL_SPEED = 30
-
+BACKGROUND_SCROLL_SPEED = 30
 GROUND_SCROLL_SPEED = 60
-
-local BACKGROUND_LOOPING_POINT = 413
+BACKGROUND_LOOPING_POINT = 413
 
 function love.load()
     math.randomseed(os.time())
@@ -101,13 +99,14 @@ function love.mouse.wasPressed(button)
     return love.mouse.buttonsPressed[button]
 end
 
-function love.update(dt)
-
+function updateBackgroundElements(dt)
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
         % BACKGROUND_LOOPING_POINT
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt)
         % VIRTUAL_WIDTH
+end
 
+function love.update(dt)
     gStateMachine:update(dt)
 
     love.keyboard.keysPressed = {}

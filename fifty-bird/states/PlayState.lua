@@ -26,6 +26,8 @@ function PlayState:update(dt)
     
     self.spawnTimer = self.spawnTimer + dt
 
+    updateBackgroundElements(dt)
+
     -- add a pair of pipes every second and a half
     if self.spawnTimer > 2 then
         local y = math.max(
@@ -98,13 +100,18 @@ function PlayState:update(dt)
     end
 end
 
-function PlayState:render()
-    for k, pipePair in pairs(self.pipePairs) do
+-- global
+function renderPlayStateElements(elements)
+    for k, pipePair in pairs(elements.pipePairs) do
         pipePair:render()
     end
 
     love.graphics.setFont(flappyFont)
-    love.graphics.print('Score: ' .. tostring(self.score), 8, 8)
+    love.graphics.print('Score: ' .. tostring(elements.score), 8, 8)
 
-    self.bird:render()
+    elements.bird:render()
+end
+
+function PlayState:render()
+    renderPlayStateElements(self)
 end
