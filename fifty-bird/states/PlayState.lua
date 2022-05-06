@@ -100,18 +100,17 @@ function PlayState:update(dt)
     end
 end
 
--- global
-function renderPlayStateElements(elements)
-    for k, pipePair in pairs(elements.pipePairs) do
+function PlayState:renderPlayStateElements(pipePairs, score, bird)
+    for k, pipePair in pairs(pipePairs) do
         pipePair:render()
     end
 
     love.graphics.setFont(flappyFont)
-    love.graphics.print('Score: ' .. tostring(elements.score), 8, 8)
+    love.graphics.print('Score: ' .. tostring(score), 8, 8)
 
-    elements.bird:render()
+    bird:render()
 end
 
 function PlayState:render()
-    renderPlayStateElements(self)
+    self:renderPlayStateElements(self.pipePairs, self.score, self.bird)
 end
