@@ -10,6 +10,7 @@ function PlayState:init()
     self.spawnTimer = 0
     self.score = 0
     self.lastY = math.random(80) + 20 - PIPE_HEIGHT 
+    self.timeout = 2
 end
 
 function PlayState:enter(params)
@@ -19,6 +20,7 @@ function PlayState:enter(params)
         self.spawnTimer = params.spawnTimer
         self.score = params.score
         self.lastY = params.lastY
+        self.timout = params.timeout
     end
 end
 
@@ -29,17 +31,19 @@ function PlayState:update(dt)
     updateBackgroundElements(dt)
 
     -- add a pair of pipes every second and a half
-    if self.spawnTimer > 2 then
+    if self.spawnTimer > self.timeout then
+        local gapHeight = math.random(90, 120)
         local y = math.max(
             10 - PIPE_HEIGHT,
             math.min(
                 self.lastY + math.random(-20, 20),
-                VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT
+                VIRTUAL_HEIGHT - gapHeight - PIPE_HEIGHT
             )
         )
         self.lastY = y
-        table.insert(self.pipePairs, PipePair(y, GROUND_SCROLL_SPEED, PIPE_HEIGHT))
+        table.insert(self.pipePairs, PipePair(y, GROUND_SCROLL_SPEED, PIPE_HEIGHT, gapHeight))
         self.spawnTimer = 0
+        self.timeout = math.random(2, 4)
     end
 
     -- increment score

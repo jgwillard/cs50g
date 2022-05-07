@@ -1,8 +1,6 @@
 PipePair = Class{}
 
-local GAP_HEIGHT = 90
-
-function PipePair:init(y, pipeScrollSpeed, pipeHeight)
+function PipePair:init(y, pipeScrollSpeed, pipeHeight, gapHeight)
     self.x = VIRTUAL_WIDTH
     self.y = y
 
@@ -10,7 +8,7 @@ function PipePair:init(y, pipeScrollSpeed, pipeHeight)
 
     self.pipes = {
         ['upper'] = Pipe(self.y, 'top'),
-        ['lower'] = Pipe(self.y + GAP_HEIGHT + pipeHeight, 'bottom')
+        ['lower'] = Pipe(self.y + gapHeight + pipeHeight, 'bottom')
     }
 
     self.remove = false
