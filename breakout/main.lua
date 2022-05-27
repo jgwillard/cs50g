@@ -23,6 +23,10 @@ function love.load()
         ['particle'] = love.graphics.newImage('graphics/particle.png')
     }
 
+    gFrames = {
+        ['paddles'] = GenerateQuadsPaddles(gTextures['main'])
+    }
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         vsync = true,
         fullscreen = false,
@@ -48,7 +52,8 @@ function love.load()
     }
 
     gStateMachine = StateMachine {
-        ['start'] = function() return StartState() end
+        ['start'] = function() return StartState() end,
+        ['play'] = function() return PlayState() end
     }
     gStateMachine:change('start')
 
@@ -82,7 +87,7 @@ function love.draw()
 
     love.graphics.draw(gTextures['background'],
         -- draw at coordinate 0, 0
-        0, 0
+        0, 0,
         -- no rotation
         0,
         -- scale factors on X and Y axis so it fills the screen
@@ -92,6 +97,8 @@ function love.draw()
     gStateMachine:render()
 
     displayFPS()
+
+    push:apply('end')
 end
 
 function displayFPS()
