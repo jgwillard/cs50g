@@ -23,7 +23,7 @@ end
 
 function Ball:reset()
     self.x = VIRTUAL_WIDTH / 2 - 4
-    self.x = VIRTUAL_HEIGHT / 2 - 4
+    self.y = VIRTUAL_HEIGHT / 2 - 4
     self.dx = 0
     self.dy = 0
 end
@@ -47,7 +47,7 @@ function Ball:update(dt)
     end
 
     -- bounce off top wall
-    if self.y >= 0 then
+    if self.y <= 0 then
         self.y = 0
         self.dy = -self.dy
         gSounds['wall-hit']:play()
