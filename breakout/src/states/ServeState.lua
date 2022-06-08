@@ -24,6 +24,10 @@ function ServeState:update(dt)
             bricks = self.bricks
         })
     end
+
+    if love.keyboard.wasPressed('escape') then
+        love.event.quit()
+    end
 end
 
 function ServeState:render()
