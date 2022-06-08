@@ -5,6 +5,7 @@ function ServeState:enter(params)
     self.bricks = params.bricks
     self.score = params.score
     self.health = params.health
+    self.level = params.level
 
     self.ball = Ball()
     self.ball.y = self.paddle.y - 8
@@ -21,7 +22,8 @@ function ServeState:update(dt)
             paddle = self.paddle,
             health = self.health,
             score = self.score,
-            bricks = self.bricks
+            bricks = self.bricks,
+            level = self.level
         })
     end
 
@@ -40,6 +42,15 @@ function ServeState:render()
 
     renderScore(self.score)
     renderHealth(self.health)
+
+    love.graphics.setFont(gFonts['large'])
+    love.graphics.printf(
+        'Level ' .. tostring(self.level),
+        0,
+        VIRTUAL_HEIGHT / 3,
+        VIRTUAL_WIDTH,
+        'center'
+    )
 
     love.graphics.setFont(gFonts['medium'])
     love.graphics.printf(

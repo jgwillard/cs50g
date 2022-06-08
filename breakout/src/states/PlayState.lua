@@ -6,6 +6,7 @@ function PlayState:enter(params)
     self.health = params.health
     self.score = params.score
     self.ball = params.ball
+    self.level = params.level
 
     self.ball.dx = math.random(-100, 100)
     self.ball.dy = math.random(50, 60)
@@ -52,7 +53,20 @@ function PlayState:update(dt)
 
     for k, brick in pairs(self.bricks) do
         if brick.inPlay and self.ball:collides(brick) then
+
             brick:hit()
+            self.score = self.score + brick.tier * 200 + brick.color * 25
+
+            if self:checkVictory() then
+                gSounds['victory']:play()
+                gStateMachine:change('victory', {
+                    level = self.level,
+                    score = self.score,
+                    paddle = self.paddle,
+                    ball = self.ball,
+                    health = self.health
+                })
+            end
 
             -- ball is moving right and is left of the brick
             if self.ball.dx > 0 and self.ball.x + 2 < brick.x then
@@ -72,7 +86,6 @@ function PlayState:update(dt)
 
             end
 
-            self.score = self.score + 1
             self.ball.dy = self.ball.dy * 1.02
             -- exit loop to prevent multiple bricks from colliding
             break
@@ -93,7 +106,8 @@ function PlayState:update(dt)
                 paddle = self.paddle,
                 score = self.score,
                 health = self.health,
-                bricks = self.bricks
+                bricks = self.bricks,
+                level = self.level
             })
         end
     end
@@ -134,4 +148,14 @@ function PlayState:render()
             'center'
         )
     end
+end
+
+function PlayState:checkVictory()
+    for k, brick in pairs(self.bricks) do
+        if brick.inPlay then
+            return false
+        end
+    end
+
+    return true
 end
