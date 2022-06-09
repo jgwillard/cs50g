@@ -60,9 +60,12 @@ function love.load()
         ['play'] = function() return PlayState() end,
         ['serve'] = function() return ServeState() end,
         ['game-over'] = function() return GameOverState() end,
-        ['victory'] = function() return VictoryState() end
+        ['victory'] = function() return VictoryState() end,
+        ['high-scores'] = function() return HighScoresState() end
     }
-    gStateMachine:change('start')
+    gStateMachine:change('start', {
+        highScores = loadHighScores()
+    })
 
     love.keyboard.keysPressed = {}
 end
@@ -108,11 +111,44 @@ function love.draw()
     push:apply('end')
 end
 
-function displayFPS()
-    -- simple FPS display across all states
-    love.graphics.setFont(gFonts['small'])
-    love.graphics.setColor(0, 1, 0, 1)
-    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 5, 5)
+function loadHighScores()
+    love.filesystem.setIdentity('breakout')
+
+    if not love.filesystem.getInfo('breakout.lst') then
+        local scores = ''
+        for i = 10, 1, -1 do
+            scores = scores .. 'JGW\n'
+            scores = scores .. tostring(i * 1000) .. '\n'
+        end
+
+        love.filesystem.write('breakout.lst', scores)
+    end
+
+    local name = true
+    local currentName =  nil
+    local counter = 1
+
+    local scores = {}
+
+    for i = 1, 10 do
+        scores[i] = {
+            name = nil,
+            score = nil
+        }
+    end
+
+    for line in love.filesystem.lines('breakout.lst') do
+        if name then
+            scores[counter].name = string.sub(line, 1, 3)
+        else
+            scores[counter].score = tonumber(line)
+            counter = counter + 1
+        end
+
+        name = not name
+    end
+
+    return scores
 end
 
 function renderScore(score)
@@ -136,4 +172,11 @@ function renderHealth(health)
         love.graphics.draw(gTextures['hearts'], gFrames['hearts'][2], healthX, 4)
         healthX = healthX + 11
     end
+end
+
+function displayFPS()
+    -- simple FPS display across all states
+    love.graphics.setFont(gFonts['small'])
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 5, 5)
 end
