@@ -28,7 +28,7 @@ function love.load()
         ['balls'] = GenerateQuadsBalls(gTextures['main']),
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
         ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
-        ['particle'] = love.graphics.newImage('graphics/particle.png')
+        ['arrows'] = GenerateQuads(gTextures['arrows'], 24, 24)
     }
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -62,7 +62,8 @@ function love.load()
         ['game-over'] = function() return GameOverState() end,
         ['victory'] = function() return VictoryState() end,
         ['high-scores'] = function() return HighScoresState() end,
-        ['enter-high-score'] = function() return EnterHighScoreState() end
+        ['enter-high-score'] = function() return EnterHighScoreState() end,
+        ['select-paddle'] = function() return SelectPaddleState() end
     }
     gStateMachine:change('start', {
         highScores = loadHighScores()
