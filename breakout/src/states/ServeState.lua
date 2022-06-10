@@ -6,6 +6,7 @@ function ServeState:enter(params)
     self.score = params.score
     self.health = params.health
     self.level = params.level
+    self.highScores = params.highScores
 
     self.ball = Ball()
     self.ball.y = self.paddle.y - 8
@@ -23,7 +24,8 @@ function ServeState:update(dt)
             health = self.health,
             score = self.score,
             bricks = self.bricks,
-            level = self.level
+            level = self.level,
+            highScores = self.highScores
         })
     end
 
