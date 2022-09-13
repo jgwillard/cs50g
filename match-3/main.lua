@@ -34,14 +34,16 @@ function love.load()
     gSounds['music']:setLooping(true)
     gSounds['music']:play()
 
-    -- initialize state machine with all state-returning functions
-    gStateMachine = StateMachine {
-        ['start'] = function() return StartState() end,
-        ['begin-game'] = function() return BeginGameState() end,
-        ['play'] = function() return PlayState() end,
-        ['game-over'] = function() return GameOverState() end
-    }
-    gStateMachine:change('start')
+
+    intervals = {1, 2, 4, 3, 2, 8}
+    counters = {0, 0, 0, 0, 0, 0}
+
+    for i = 1, 6 do
+        -- anonymous function that gets called every intervals[i], in seconds
+        Timer.every(intervals[i], function()
+            counters[i] = counters[i] + 1
+        end)
+    end
 
     -- keep track of scrolling our background on the X axis
     backgroundX = 0
@@ -58,6 +60,9 @@ function love.keypressed(key)
     
     -- add to our table of keys pressed this frame
     love.keyboard.keysPressed[key] = true
+    if key == 'escape' then
+        love.event.quit()
+    end
 end
 
 function love.keyboard.wasPressed(key)
@@ -78,7 +83,8 @@ function love.update(dt)
         backgroundX = 0
     end
 
-    gStateMachine:update(dt)
+    --gStateMachine:update(dt)
+    Timer.update(dt)
 
     love.keyboard.keysPressed = {}
 end
@@ -88,7 +94,16 @@ function love.draw()
 
     -- scrolling background drawn behind every state
     love.graphics.draw(gTextures['background'], backgroundX, 0)
+    for i = 1, 6 do
+        love.graphics.printf(
+            'timer:' .. tostring(counters[i]) .. ' secs (every ' .. intervals[i] .. ' secs)',
+            0,
+            54 + i * 16,
+            VIRTUAL_WIDTH,
+            'center'
+        )
+    end
     
-    gStateMachine:render()
+    --gStateMachine:render()
     push:finish()
 end
