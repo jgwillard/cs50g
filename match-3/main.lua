@@ -34,16 +34,37 @@ function love.load()
     gSounds['music']:setLooping(true)
     gSounds['music']:play()
 
-
-    intervals = {1, 2, 4, 3, 2, 8}
-    counters = {0, 0, 0, 0, 0, 0}
-
-    for i = 1, 6 do
-        -- anonymous function that gets called every intervals[i], in seconds
-        Timer.every(intervals[i], function()
-            counters[i] = counters[i] + 1
-        end)
-    end
+    sprite = love.graphics.newImage('graphics/bird.png')
+    MOVEMENT_TIME = 2
+    SPRITE_WIDTH = sprite:getWidth()
+    SPRITE_HEIGHT = sprite:getHeight()
+    bird = { x = 0, y = 0 }
+    Chain(
+        function (go)
+            Timer.tween(MOVEMENT_TIME, {
+                [bird] = { x = VIRTUAL_WIDTH - SPRITE_WIDTH }
+            })
+            Timer.after(MOVEMENT_TIME, go)
+        end,
+        function (go)
+            Timer.tween(2, {
+                [bird] = { y = VIRTUAL_HEIGHT - SPRITE_HEIGHT }
+            })
+            Timer.after(MOVEMENT_TIME, go)
+        end,
+        function (go)
+            Timer.tween(2, {
+                [bird] = { x = 0 }
+            })
+            Timer.after(MOVEMENT_TIME, go)
+        end,
+        function (go)
+            Timer.tween(2, {
+                [bird] = { y = 0 }
+            })
+            Timer.after(MOVEMENT_TIME, go)
+        end
+    )()
 
     -- keep track of scrolling our background on the X axis
     backgroundX = 0
@@ -94,16 +115,9 @@ function love.draw()
 
     -- scrolling background drawn behind every state
     love.graphics.draw(gTextures['background'], backgroundX, 0)
-    for i = 1, 6 do
-        love.graphics.printf(
-            'timer:' .. tostring(counters[i]) .. ' secs (every ' .. intervals[i] .. ' secs)',
-            0,
-            54 + i * 16,
-            VIRTUAL_WIDTH,
-            'center'
-        )
-    end
-    
+
+    love.graphics.draw(sprite, bird.x, bird.y)
+
     --gStateMachine:render()
     push:finish()
 end

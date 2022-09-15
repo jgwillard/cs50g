@@ -3,6 +3,7 @@ Class = require 'lib/class'
 push = require 'lib/push'
 
 Timer = require 'lib/knife.timer'
+Chain = require 'lib/knife.chain'
 
 --require 'src/StateMachine'
 --require 'src/Util'
