@@ -32,13 +32,14 @@ function love.load()
 
     -- set music to loop and start
     gSounds['music']:setLooping(true)
-    gSounds['music']:play()
+    --gSounds['music']:play()
 
     sprite = love.graphics.newImage('graphics/bird.png')
     MOVEMENT_TIME = 2
     SPRITE_WIDTH = sprite:getWidth()
     SPRITE_HEIGHT = sprite:getHeight()
     bird = { x = 0, y = 0 }
+    initialStateActive = true
     Chain(
         function (go)
             Timer.tween(MOVEMENT_TIME, {
@@ -47,22 +48,25 @@ function love.load()
             Timer.after(MOVEMENT_TIME, go)
         end,
         function (go)
-            Timer.tween(2, {
+            Timer.tween(MOVEMENT_TIME, {
                 [bird] = { y = VIRTUAL_HEIGHT - SPRITE_HEIGHT }
             })
             Timer.after(MOVEMENT_TIME, go)
         end,
         function (go)
-            Timer.tween(2, {
+            Timer.tween(MOVEMENT_TIME, {
                 [bird] = { x = 0 }
             })
             Timer.after(MOVEMENT_TIME, go)
         end,
         function (go)
-            Timer.tween(2, {
+            Timer.tween(MOVEMENT_TIME, {
                 [bird] = { y = 0 }
             })
             Timer.after(MOVEMENT_TIME, go)
+        end,
+        function (go)
+            initialStateActive = false
         end
     )()
 
@@ -95,7 +99,38 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
-    
+
+    reverseX, reverseY = false, false
+
+    if initialStateActive == false then
+        if reverseX == true then
+            Timer.tween(0.5, {
+                [bird] = { x = bird.x - SPRITE_WIDTH }
+            })
+            if bird.x < 0 then
+                reverseX = false
+            end
+        else
+            Timer.tween(0.5, {
+                [bird] = { x = bird.x + SPRITE_WIDTH }
+            })
+            if bird.x > VIRTUAL_WIDTH - SPRITE_WIDTH then
+                reverseX = true
+            end
+        end
+        if reverseY == false then
+            Timer.tween(1, {
+                [bird] = { y = 0 }
+            })
+            reverseY = false
+        else
+            Timer.tween(1, {
+                [bird] = { y = VIRTUAL_HEIGHT - SPRITE_HEIGHT }
+            })
+            reverseY = true
+        end
+    end
+
     -- scroll background, used across all states
     backgroundX = backgroundX - BACKGROUND_SCROLL_SPEED * dt
     
@@ -117,6 +152,9 @@ function love.draw()
     love.graphics.draw(gTextures['background'], backgroundX, 0)
 
     love.graphics.draw(sprite, bird.x, bird.y)
+
+    love.graphics.print('reverseX: ' .. tostring(reverseX), 8, 8)
+    love.graphics.print('reverseY: ' .. tostring(reverseY), 8, 16)
 
     --gStateMachine:render()
     push:finish()
